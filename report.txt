@@ -150,3 +150,18 @@ fedora:x:1000:
 nginx:x:989:
 mephi-devs:x:1001:mephi-admin
 mephi-admin:x:1002:
+===== FINAL TESTING =====
+systemctl is-active nginx
+active
+
+curl -s http://192.168.1.100
+Hello from Student: М255548
+
+ls -l /data/mephi-web/final_test_file
+-rw-r--r--. 1 mephi-admin mephi-devs 0 Mar 27 17:57 /data/mephi-web/final_test_file
+
+sudo sshd -T | grep denyusers
+denyusers root
+
+grep pam_listfile /etc/pam.d/login
+auth required pam_listfile.so item=user sense=deny file=/etc/ssh/denied_users onerr=succeed
