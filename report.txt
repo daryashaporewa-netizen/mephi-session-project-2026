@@ -1,0 +1,152 @@
+ping -c 4 192.168.1.1 > ~/network_check.txt
+ping -c 4 8.8.8.8 >> ~/network_check.txt
+sudo dnf install -y nginx
+rpm -q nginx
+sudo dnf install -y tcpdump
+rpm -q tcpdump
+sudo dnf install -y libcap-ng-utils
+rpm -q libcap-ng-utils
+cd /tmp && dnf download tcpdump
+ls -l /tmp/tcpdump-*.rpm
+sudo rpm -Uvh /tmp/tcpdump-*.rpm
+rpm -q tcpdump
+lsblk
+sudo fdisk /dev/vdb
+sudo mkfs.ext4 -L MEPHI_DATA /dev/vdb1
+lsblk -f
+sudo mkdir -p /data/mephi-web
+echo 'LABEL=MEPHI_DATA /data/mephi-web ext4 defaults 0 0' | sudo tee -a /etc/fstab
+sudo mount -a
+sudo systemctl daemon-reload
+lsblk -f
+cp /etc/fstab ~/fstab.txt
+sudo systemctl start nginx
+sudo systemctl enable nginx
+journalctl -u nginx --since "5 minutes ago" > ~/nginx_recent_logs.txt
+sudo groupadd mephi-devs
+sudo useradd mephi-admin
+sudo usermod -aG mephi-devs mephi-admin
+sudo passwd mephi-admin
+sudo chown mephi-admin:mephi-devs /data/mephi-web
+sudo chmod 2775 /data/mephi-web
+stat /data/mephi-web > ~/permissions.txt
+id mephi-admin > ~/users_groups.txt
+getent group mephi-devs >> ~/users_groups.txt
+getenforce > ~/selinux_status.txt
+sudo semanage fcontext -a -t httpd_sys_content_t "/data/mephi-web(/.*)?"
+sudo restorecon -Rv /data/mephi-web
+ls -Zd /data/mephi-web > ~/file_contexts.txt
+ls -l /usr/sbin/tcpdump
+sudo setcap cap_net_raw,cap_net_admin=ep /usr/sbin/tcpdump
+getcap /usr/sbin/tcpdump > ~/tcpdump_capabilities.txt
+sudo -u mephi-admin tcpdump --help
+echo root | sudo tee /etc/ssh/denied_users
+echo 'DenyUsers root' | sudo tee -a /etc/ssh/sshd_config.d/deny-root.conf
+echo 'auth required pam_listfile.so item=user sense=deny file=/etc/ssh/denied_users onerr=succeed' | sudo tee -a /etc/pam.d/login
+sudo systemctl reload sshd
+su - root
+su - mephi-admin
+echo 'Hello from Student: М255548' > /data/mephi-web/index.html
+exit
+sudo sed -i '41s|/usr/share/nginx/html|/data/mephi-web|' /etc/nginx/nginx.conf
+sudo nginx -t
+sudo systemctl reload nginx
+curl http://localhost
+curl http://192.168.1.100
+curl -s http://192.168.1.100 > ~/curl_output.txt
+cp /data/mephi-web/index.html ~/index.html
+cp /etc/passwd ~/passwd.txt
+cp /etc/group ~/group.txt
+cp /tmp/tcpdump-*.rpm ~/
+sudo -u mephi-admin touch /data/mephi-web/test_from_mephi_admin
+ls -l /data/mephi-web/test_from_mephi_admin
+sudo -u mephi-admin rm /data/mephi-web/test_from_mephi_admin
+ls -l /data/mephi-web
+root:x:0:0:Super User:/root:/bin/bash
+bin:x:1:1:bin:/bin:/usr/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/usr/sbin/nologin
+adm:x:3:4:adm:/var/adm:/usr/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/usr/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/usr/sbin/nologin
+operator:x:11:0:operator:/root:/usr/sbin/nologin
+games:x:12:100:games:/usr/games:/usr/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/usr/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/usr/sbin/nologin
+dbus:x:81:81:System Message Bus:/:/usr/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+unbound:x:999:999:Unbound DNS resolver:/var/lib/unbound:/sbin/nologin
+systemd-oom:x:998:998:systemd Userspace OOM Killer:/:/usr/sbin/nologin
+abrt:x:173:173::/etc/abrt:/usr/sbin/nologin
+polkitd:x:114:114:User for polkitd:/:/sbin/nologin
+sssd:x:996:996:User for sssd:/run/sssd:/sbin/nologin
+chrony:x:995:995:chrony system user:/var/lib/chrony:/sbin/nologin
+setroubleshoot:x:994:994:SELinux troubleshoot server:/var/lib/setroubleshoot:/usr/sbin/nologin
+rpc:x:32:32:Rpcbind Daemon:/var/lib/rpcbind:/usr/sbin/nologin
+rpcuser:x:29:29:RPC Service User:/var/lib/nfs:/usr/sbin/nologin
+systemd-coredump:x:993:993:systemd Core Dumper:/:/usr/sbin/nologin
+systemd-timesync:x:992:992:systemd Time Synchronization:/:/usr/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+systemd-resolve:x:193:193:systemd Resolver:/:/usr/sbin/nologin
+dnsmasq:x:991:991:Dnsmasq DHCP and DNS server:/var/lib/dnsmasq:/usr/sbin/nologin
+tcpdump:x:72:72:tcpdump:/:/usr/sbin/nologin
+fedora:x:1000:1000:Fedora User:/home/fedora:/bin/bash
+nginx:x:989:989:Nginx web server:/var/lib/nginx:/sbin/nologin
+mephi-admin:x:1001:1002::/home/mephi-admin:/bin/bash
+root:x:0:
+sys:x:3:
+adm:x:4:
+tty:x:5:
+disk:x:6:
+lp:x:7:
+mem:x:8:
+kmem:x:9:
+wheel:x:10:fedora
+cdrom:x:11:
+mail:x:12:
+man:x:15:
+dialout:x:18:
+floppy:x:19:
+games:x:20:
+utmp:x:22:
+tape:x:33:
+kvm:x:36:
+video:x:39:
+ftp:x:50:
+lock:x:54:
+audio:x:63:
+users:x:100:
+clock:x:103:
+input:x:104:
+render:x:105:
+sgx:x:106:
+nobody:x:65534:
+bin:x:1:
+daemon:x:2:
+dbus:x:81:
+tss:x:59:
+unbound:x:999:
+systemd-journal:x:190:
+systemd-oom:x:998:
+abrt:x:173:
+polkitd:x:114:
+printadmin:x:997:
+sssd:x:996:
+chrony:x:995:
+setroubleshoot:x:994:
+rpc:x:32:
+rpcuser:x:29:
+systemd-coredump:x:993:
+systemd-timesync:x:992:
+wbpriv:x:88:
+sshd:x:74:
+systemd-resolve:x:193:
+dnsmasq:x:991:
+tcpdump:x:72:
+plocate:x:990:
+fedora:x:1000:
+nginx:x:989:
+mephi-devs:x:1001:mephi-admin
+mephi-admin:x:1002:
